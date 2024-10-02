@@ -1,0 +1,155 @@
+---
+title: "BIOS6621 HW6"
+author: "Ryan Summers"
+date: "2024-10-01"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r Libraries, message=FALSE}
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(magrittr)
+library(kableExtra)
+library(gt)
+```
+
+
+```{r Load Data File}
+lead_df <- read_csv('/Users/ryan_summers/UC - M.S. Biostatistics/BIOS 6621 - Statistical Consulting/Week 6/HW 6/lead-iq-01.csv')
+
+```
+
+```{r}
+lead_df %>%
+  ggplot(aes(x = factor(Smelter), y = IQ)) +
+  geom_boxplot(outlier.shape = NA) +  
+  geom_jitter(width = 0.2, alpha = 0.5) +
+  facet_wrap(~Smelter, scales = 'free') +
+  theme_bw() +
+  labs(title = "IQ Levels by Smelter", y = "IQ Levels")
+
+```
+
+
+```{r Table1, echo=FALSE}
+# Summarizing the data
+# sum_tbl <- lead_df %>%
+#   group_by(Smelter) %>% 
+#   summarise(
+#     mean_iq = round(mean(IQ)),
+#     q1_iq = quantile(IQ, probs=0.25),
+#     median_iq = round(median(IQ)),
+#     q3_iq = quantile(IQ, probs=0.75),
+#     iqr_iq = IQR(IQ),
+#     sd_iq = round(sd(IQ)),
+#     min_iq = min(IQ),
+#     max_iq = max(IQ) )
+# 
+# colnames(sum_tbl) <- c('Smelter', 'Mean', 'Q1', 'Median', 'Q3', 'IQR(Q3-Q1)', 'SD', 
+#                        'Min', 'Max')
+# 
+# kable(sum_tbl, format = "html", 
+#         caption = "<span style=
+#         ' font-size: 20px; 
+#           font-weight: bold; 
+#           color: #333; '
+#         >Summary Statistics</span>") %>%
+#   add_header_above(c(" " = 1, "IQ" = 8)) %>% 
+#   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) 
+
+
+```
+
+
+```{r Table 2}
+lead_df %>%
+  group_by(Smelter) %>% 
+  summarise(
+    n = n(),
+    mean_iq = round(mean(IQ)),
+    q1_iq = quantile(IQ, probs=0.25),
+    median_iq = round(median(IQ)),
+    q3_iq = quantile(IQ, probs=0.75),
+    iqr_iq = IQR(IQ),
+    sd_iq = round(sd(IQ)),
+    min_iq = min(IQ),
+    max_iq = max(IQ) ) %>% 
+  
+  # rowname_col = "row", groupname_col = "group"
+  gt() %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()) %>%
+  
+  # modify row cells to be gray
+  tab_style(
+    style = cell_fill(color='gray95'),
+    locations = list(
+      cells_body(rows = 1),
+      cells_title())) %>%
+
+  # modify column names
+  cols_label(
+    n ~ 'n',
+    mean_iq ~ "Mean",
+    q1_iq ~ "Q1",
+    median_iq ~ 'Median',
+    q3_iq ~ 'Q3',
+    iqr_iq ~ 'IQR',
+    sd_iq ~ 'SD',
+    min_iq ~ 'Min',
+    max_iq ~ 'Max'
+  ) %>% 
+  
+  # add a source note
+  tab_source_note(
+    source_note = md(c(
+    '_Note:_ The original study was published in Landrigan PJ, Baloh RW, Barthel WF, 
+    Whitworth RH, Staehling NW, and Rosenblum BF. (1975). Neuropsychological 
+    dysfunction in children with chronic low-level lead absorption. The Lancet, 
+    305: 708-712.',
+    
+    '_Data Source:_ Rosner B. (2006). Fundamentals of Biostatistics (6th edition). Duxbury.'))) %>%
+  
+  # add a footnote (if needed)
+  # tab_footnote(
+  #   footnote = "This is a footnote",
+  #   locations = cells_column_labels(2)) %>%
+  
+  # add a header and subtitle
+  tab_header(
+    title = 'Table 1: Summary Statistics of IQ Levels',
+    subtitle = "Children: Ages between 3 & 15 in El Paso") %>% 
+  
+  # adjust column widths of table
+  tab_options(table.width = '85%') 
+
+```
+
+#### Analysis 
+
+The summary statistics indicate that the IQ levels of children between the ages 
+of 3 and 15 in El Paso were approximately normally distributed for children near 
+the Smelter. However, an extreme outlier was noted for IQ levels in children far
+from the Smelter. Given this outlier, the median and IQR values are better 
+equipped to analyze the variability between groups. The medians were within five
+points of each other, and the IQRs were approximately equally spread between the third (Q3) 
+and first (Q1) quartiles, indicating very little difference between the groups.
+
+#### Mean IQ
+
+The mean IQ for children far from smelter:
+`r round(mean(lead_df$IQ[lead_df$Smelter == 'Far']))`.
+
+The mean IQ for children near the smelter: 
+`r round(mean(lead_df$IQ[lead_df$Smelter == 'Near']))`.
+
+
+
+
+
+
