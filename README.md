@@ -3,7 +3,7 @@ BIOS6621 Week 6 HW
 
 The analysis is divided into five subdirectories :
 1. Background
-   - Files that describe the area or topic of interest. This can include history, images, references, etc.
+   - Files that describe the area or topic of interest. This can include data description, images, references, etc.
 2. Code
    - All supporting code from programming languages used during analysis.
 3. Reports
