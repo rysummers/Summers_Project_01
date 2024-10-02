@@ -3,8 +3,8 @@ title: "BIOS6621 HW6"
 author: "Ryan Summers"
 date: "2024-10-01"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r Libraries, message=FALSE}
@@ -24,11 +24,21 @@ lead_df <- read_csv('/Users/ryan_summers/UC - M.S. Biostatistics/BIOS 6621 - Sta
 ```
 
 ```{r}
+# Fix data entry error
+lead_df <- lead_df %>% 
+  mutate(IQ = ifelse(IQ==999 & Smelter=='Far', 99, IQ))
+
+# export df to local repo
+write.csv(lead_df, file='/Users/ryan_summers/UC - M.S. Biostatistics/BIOS 6621 - Statistical Consulting/Week 6/HW 6/Summers_Project_01/DataProcessed/lead-iq-02.csv', row.names = F)
+  
+```
+
+```{r}
 lead_df %>%
   ggplot(aes(x = factor(Smelter), y = IQ)) +
   geom_boxplot(outlier.shape = NA) +  
   geom_jitter(width = 0.2, alpha = 0.5) +
-  facet_wrap(~Smelter, scales = 'free') +
+  #facet_wrap(~Smelter, scales = 'free') +
   theme_bw() +
   labs(title = "IQ Levels by Smelter", y = "IQ Levels")
 
@@ -133,12 +143,11 @@ lead_df %>%
 #### Analysis 
 
 The summary statistics indicate that the IQ levels of children between the ages 
-of 3 and 15 in El Paso were approximately normally distributed for children near 
-the Smelter. However, an extreme outlier was noted for IQ levels in children far
-from the Smelter. Given this outlier, the median and IQR values are better 
-equipped to analyze the variability between groups. The medians were within five
-points of each other, and the IQRs were approximately equally spread between the third (Q3) 
-and first (Q1) quartiles, indicating very little difference between the groups.
+of 3 and 15 in El Paso were approximately normally distributed for children in both
+groups (Near and Far). The far group exhibited slightly more variability around 
+its mean as compared to the near grou. However, as the boxplots indicate, there
+doesn't appear to be any meaningful difference between the groups.
+
 
 #### Mean IQ
 
